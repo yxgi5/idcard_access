@@ -4,7 +4,7 @@
   * @author  Andreas Zhang
   * @version V1.0
   * @date    05-June-2019
-  * @brief   BSP led driver header.
+  * @brief   BSP led driver source.
   ******************************************************************************
 */
 

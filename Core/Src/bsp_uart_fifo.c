@@ -10,7 +10,7 @@
 
 #include "bsp.h"
 
-/* 串口1的GPIO  PB6, PB7   RS323 DB9接口 */
+/* 串口1的GPIO  PA9, PA10   RS323 DB9接口 */
 #define USART1_CLK_ENABLE()              __HAL_RCC_USART1_CLK_ENABLE()
 
 #define USART1_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE()

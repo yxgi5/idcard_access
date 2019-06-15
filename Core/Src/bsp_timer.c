@@ -9,7 +9,8 @@
 */
 #include "bsp.h"
 
-#define USE_TIM2
+//#define USE_TIM2
+#define USE_TIM6
 //#define USE_TIM21
 //#define USE_TIM22
 
@@ -19,7 +20,27 @@
   #define TIM_HARD_IRQn       TIM2_IRQn
   #define TIM_HARD_IRQHandler     TIM2_IRQHandler
 #endif
-// TODO: USE TIM21/TIM22/TIM6
+
+#ifdef USE_TIM6
+  #define TIM_HARD          TIM6
+  #define RCC_TIM_HARD_CLK_ENABLE() __HAL_RCC_TIM6_CLK_ENABLE()
+  #define TIM_HARD_IRQn       TIM6_IRQn
+  #define TIM_HARD_IRQHandler     TIM6_IRQHandler
+#endif
+
+#ifdef USE_TIM21
+  #define TIM_HARD          TIM21
+  #define RCC_TIM_HARD_CLK_ENABLE() __HAL_RCC_TIM21_CLK_ENABLE()
+  #define TIM_HARD_IRQn       TIM21_IRQn
+  #define TIM_HARD_IRQHandler     TIM21_IRQHandler
+#endif
+
+#ifdef USE_TIM22
+  #define TIM_HARD          TIM22
+  #define RCC_TIM_HARD_CLK_ENABLE() __HAL_RCC_TIM22_CLK_ENABLE()
+  #define TIM_HARD_IRQn       TIM22_IRQn
+  #define TIM_HARD_IRQHandler     TIM22_IRQHandler
+#endif
 
 static void (*s_TIM_CallBack1)(void);
 static void (*s_TIM_CallBack2)(void);

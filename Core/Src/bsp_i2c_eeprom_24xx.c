@@ -268,7 +268,7 @@ uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t _usAddress, uint16_t _usSize)
 {
   do
   {
-    if(HAL_I2C_Master_Receive_IT(&I2cHandle, (uint16_t)_usAddress, (uint8_t *)_pReadBuf, _usSize) != HAL_OK)
+    if(HAL_I2C_Master_Receive_IT(&I2c2Handle, (uint16_t)_usAddress, (uint8_t *)_pReadBuf, _usSize) != HAL_OK)
     {
       /* Error_Handler() function is called when error occurs. */
         Error_Handler(__FILE__, __LINE__);
@@ -281,14 +281,14 @@ uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t _usAddress, uint16_t _usSize)
         For simplicity reasons, this example is just waiting till the end of the
         transfer, but application may perform other tasks while transfer operation
         is ongoing. */
-    while (HAL_I2C_GetState(&I2cHandle) != HAL_I2C_STATE_READY)
+    while (HAL_I2C_GetState(&I2c2Handle) != HAL_I2C_STATE_READY)
     {
     }
 
     /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
        Master restarts communication */
   }
-  while(HAL_I2C_GetError(&I2cHandle) == HAL_I2C_ERROR_AF);
+  while(HAL_I2C_GetError(&I2c2Handle) == HAL_I2C_ERROR_AF);
 
   return 0;
 }
@@ -297,7 +297,7 @@ uint8_t ee_WriteBytes(uint8_t *_pWriteBuf, uint16_t _usAddress, uint16_t _usSize
 {
   do
   {
-    if(HAL_I2C_Master_Receive_IT(&I2cHandle, (uint16_t)EE_DEV_ADDR, (uint8_t *)_pWriteBuf, _usSize) != HAL_OK)
+    if(HAL_I2C_Master_Receive_IT(&I2c2Handle, (uint16_t)EE_DEV_ADDR, (uint8_t *)_pWriteBuf, _usSize) != HAL_OK)
     {
       /* Error_Handler() function is called when error occurs. */
       Error_Handler(__FILE__, __LINE__);
@@ -310,14 +310,14 @@ uint8_t ee_WriteBytes(uint8_t *_pWriteBuf, uint16_t _usAddress, uint16_t _usSize
         For simplicity reasons, this example is just waiting till the end of the
         transfer, but application may perform other tasks while transfer operation
         is ongoing. */
-    while (HAL_I2C_GetState(&I2cHandle) != HAL_I2C_STATE_READY)
+    while (HAL_I2C_GetState(&I2c2Handle) != HAL_I2C_STATE_READY)
     {
     }
 
     /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
        Master restarts communication */
   }
-  while(HAL_I2C_GetError(&I2cHandle) == HAL_I2C_ERROR_AF);
+  while(HAL_I2C_GetError(&I2c2Handle) == HAL_I2C_ERROR_AF);
 
   return 0;
 }

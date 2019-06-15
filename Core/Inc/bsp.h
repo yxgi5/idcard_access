@@ -29,6 +29,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define USE_HSE
+
 #ifndef TRUE
   #define TRUE  1
 #endif

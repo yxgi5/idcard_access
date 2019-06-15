@@ -461,6 +461,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\bsp_key.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_uart_fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\bsp_uart_fifo.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

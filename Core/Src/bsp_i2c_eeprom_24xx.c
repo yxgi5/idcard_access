@@ -259,67 +259,152 @@ cmd_fail: /* 命令执行失败后，切记发送停止信号，避免影响I2C�
 
 #else
 
+uint16_t EepromSlvAddr=EE_DEV_ADDR;
+
+uint8_t WriteBuffer[32];
+
 uint8_t ee_CheckOk(void)
 {
-
+  return i2c2_CheckDevice(EE_DEV_ADDR);
 }
 
-uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t _usAddress, uint16_t _usSize)
+uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t ByteCount)
 {
-  do
-  {
-    if(HAL_I2C_Master_Receive_IT(&I2c2Handle, (uint16_t)_usAddress, (uint8_t *)_pReadBuf, _usSize) != HAL_OK)
-    {
-      /* Error_Handler() function is called when error occurs. */
-        Error_Handler(__FILE__, __LINE__);
-    }
+  uint8_t Status;
+  uint16_t Address = EE_START_ADDRESS;
+  uint16_t WrBfrOffset;
 
-    /*##-5- Wait for the end of the transfer #################################*/
-    /*  Before starting a new communication transfer, you need to check the current
-        state of the peripheral; if it�s busy you need to wait for the end of current
-        transfer before starting a new one.
-        For simplicity reasons, this example is just waiting till the end of the
-        transfer, but application may perform other tasks while transfer operation
-        is ongoing. */
-    while (HAL_I2C_GetState(&I2c2Handle) != HAL_I2C_STATE_READY)
-    {
-    }
-
-    /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-       Master restarts communication */
+  /*
+   * Position the Pointer in EEPROM.
+   */
+  if (EE_ADDR_BYTES == 1) {
+    WriteBuffer[0] = (uint8_t) (Address);
+    WrBfrOffset = 1;
+  } else {
+    WriteBuffer[0] = (uint8_t) (Address >> 8);
+    WriteBuffer[1] = (uint8_t) (Address);
+    WrBfrOffset = 2;
   }
-  while(HAL_I2C_GetError(&I2c2Handle) == HAL_I2C_ERROR_AF);
+  Status = ee_WriteBytes(WriteBuffer, EE_START_ADDRESS, WrBfrOffset);
 
-  return 0;
+  return Status;
 }
 
-uint8_t ee_WriteBytes(uint8_t *_pWriteBuf, uint16_t _usAddress, uint16_t _usSize)
+uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
 {
-  do
-  {
-    if(HAL_I2C_Master_Receive_IT(&I2c2Handle, (uint16_t)EE_DEV_ADDR, (uint8_t *)_pWriteBuf, _usSize) != HAL_OK)
-    {
-      /* Error_Handler() function is called when error occurs. */
-      Error_Handler(__FILE__, __LINE__);
-    }
+  uint8_t Status=0;
+  uint8_t inpage_offset,end_offset,start_page,end_page,page_cnt;
+  uint16_t end_addr,byte_cnt;
 
-    /*##-5- Wait for the end of the transfer #################################*/
-    /*  Before starting a new communication transfer, you need to check the current
-        state of the peripheral; if it�s busy you need to wait for the end of current
-        transfer before starting a new one.
-        For simplicity reasons, this example is just waiting till the end of the
-        transfer, but application may perform other tasks while transfer operation
-        is ongoing. */
-    while (HAL_I2C_GetState(&I2c2Handle) != HAL_I2C_STATE_READY)
-    {
-    }
-
-    /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-       Master restarts communication */
-  }
-  while(HAL_I2C_GetError(&I2c2Handle) == HAL_I2C_ERROR_AF);
-
-  return 0;
-}
-
+#if(EE_ADDR_BYTES==1)
+    uint8_t WriteBuffer[EE_PAGE_SIZE+1]={0}; // 24c08起始地址1byte
+    uint16_t WrBfrOffset=1;// 24c08起始地址1byte
+# else
+    uint8_t WriteBuffer[EE_PAGE_SIZE+2]={0}; // 24c128起始地址2byte
+    uint16_t WrBfrOffset=2;// 24c128起始地址2byte
 #endif
+
+  /*
+   * Send the Data.
+   */
+  inpage_offset = start_addr%EE_PAGE_SIZE; // 起始地址在一页内的偏移 0~15
+  byte_cnt = ByteCount+inpage_offset;
+  end_addr = byte_cnt-1;// 结束字节位置就是byte_cnt-1
+  end_offset = byte_cnt % EE_PAGE_SIZE;
+
+  // 计算结束的页，就是last page
+  if(byte_cnt%EE_PAGE_SIZE)
+  {
+    end_page=byte_cnt/EE_PAGE_SIZE+1;
+  }
+  else
+  {
+    end_page=byte_cnt/EE_PAGE_SIZE;
+  }
+  start_page=start_addr/EE_PAGE_SIZE+1; // 从1开始算
+
+  for(page_cnt=start_page; page_cnt<=end_page; )
+  {
+    if(page_cnt==start_page) // 第一个page，可能不是从头开始的
+    {
+      if(EE_ADDR_BYTES==1)
+      {
+        EepromSlvAddr = EE_DEV_ADDR & (((start_addr & 0x3ff) >> 7) & 0xFE);
+        WriteBuffer[0] = (uint8_t)(start_addr & 0xff);
+        if(byte_cnt<=EE_PAGE_SIZE) // 起始地址 到 这一页尾 能放得下数据buffer
+        {
+          memcpy(WriteBuffer+1, Buffer, ByteCount);
+          Status = i2c2_SendBytes(WriteBuffer, ByteCount+WrBfrOffset, EepromSlvAddr);
+        }
+        else
+        {
+          memcpy(WriteBuffer+1, Buffer, EE_PAGE_SIZE-inpage_offset);
+          Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE-inpage_offset+WrBfrOffset, EepromSlvAddr);
+        }
+      }
+      else
+      {
+        EepromSlvAddr = EE_DEV_ADDR;
+        WriteBuffer[0] = (uint8_t)((start_addr>>8) & 0xff); // 24c256 15 bits, 24c128 14 bits
+        WriteBuffer[1] = (uint8_t)(start_addr & 0xff);
+        if(byte_cnt<=EE_PAGE_SIZE) // 起始地址 到 这一页尾 能放得下数据buffer
+        {
+          memcpy(WriteBuffer+2, Buffer, ByteCount);
+          Status = i2c2_SendBytes(WriteBuffer, ByteCount+WrBfrOffset, EepromSlvAddr);
+        }
+        else
+        {
+          memcpy(WriteBuffer+2, Buffer, EE_PAGE_SIZE-inpage_offset);
+          Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE-inpage_offset+WrBfrOffset, EepromSlvAddr);
+        }
+      }
+    }
+    else if((page_cnt==end_page)&&(end_page!=start_page)&&(end_offset!=0))
+    {
+      if(EE_ADDR_BYTES==1)
+      {
+        EepromSlvAddr = EE_DEV_ADDR & (((((page_cnt-start_page)*EE_PAGE_SIZE) & 0x3ff) >> 7)& 0xFE);
+        WriteBuffer[0] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
+
+        memcpy(WriteBuffer+1, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, end_offset);
+        Status = i2c2_SendBytes(WriteBuffer, end_offset+WrBfrOffset, EepromSlvAddr);
+      }
+      else
+      {
+        EepromSlvAddr = EE_DEV_ADDR;
+        WriteBuffer[0] = (uint8_t)((((page_cnt-start_page)*EE_PAGE_SIZE)>>8) & 0xff); // 24c256 15 bits, 24c128 14 bits
+        WriteBuffer[1] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
+
+        memcpy(WriteBuffer+2, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, end_offset);
+        Status = i2c2_SendBytes(WriteBuffer, end_offset+WrBfrOffset, EepromSlvAddr);
+      }
+    }
+    else
+    {
+      if(EE_ADDR_BYTES==1)
+      {
+        EepromSlvAddr = EE_DEV_ADDR & (((((page_cnt-start_page)*EE_PAGE_SIZE) & 0x3ff) >> 7)& 0xFE);
+        WriteBuffer[0] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
+        memcpy(WriteBuffer+1, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, EE_PAGE_SIZE);
+        Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE+WrBfrOffset, EepromSlvAddr);
+      }
+      else
+      {
+        EepromSlvAddr = EE_DEV_ADDR;
+        WriteBuffer[0] = (uint8_t)((((page_cnt-start_page)*EE_PAGE_SIZE)>>8) & 0xff); // 24c256 15 bits, 24c128 14 bits
+        WriteBuffer[1] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
+        memcpy(WriteBuffer+2, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, EE_PAGE_SIZE);
+        Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE+WrBfrOffset, EepromSlvAddr);
+      }
+    }
+    if (Status != 0)
+    {
+      return Status;
+    }
+    page_cnt++;
+  }
+
+  return Status;
+}
+
+#endif // USE_GPIO_I2C

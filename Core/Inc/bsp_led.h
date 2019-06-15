@@ -53,12 +53,13 @@ typedef enum
 #define GPIO_CLK_ENABLE_LED4()           __HAL_RCC_GPIOB_CLK_ENABLE()
 #define GPIO_CLK_DISABLE_LED4()          __HAL_RCC_GPIOB_CLK_DISABLE()
 
-
-//#define ALL_LED_GPIO_CLK_ENABLE() { \
-//  __HAL_RCC_GPIOB_CLK_ENABLE(); \
-//  __HAL_RCC_GPIOF_CLK_ENABLE(); \
-//  __HAL_RCC_GPIOI_CLK_ENABLE(); \
-//};
+/*
+#define ALL_LED_GPIO_CLK_ENABLE() { \
+  __HAL_RCC_GPIOB_CLK_ENABLE(); \
+  __HAL_RCC_GPIOF_CLK_ENABLE(); \
+  __HAL_RCC_GPIOI_CLK_ENABLE(); \
+};
+*/
 
 #define ALL_LED_GPIO_CLK_ENABLE() { \
   __HAL_RCC_GPIOB_CLK_ENABLE(); \

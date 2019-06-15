@@ -87,7 +87,7 @@ void Error_Handler(char *file, uint32_t line)
 
 void bsp_RunPer10ms(void)
 {
-//  bsp_KeyScan10ms();
+  bsp_KeyScan10ms();
 }
 
 void bsp_RunPer1ms(void)

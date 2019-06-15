@@ -42,7 +42,7 @@
 //#include "bsp_uart_fifo.h"
 #include "bsp_led.h"
 #include "bsp_timer.h"
-//#include "bsp_key.h"
+#include "bsp_key.h"
 //#include "bsp_exti.h"
 //#include "bsp_modbus.h"
 //#include "bsp_user_lib.h"

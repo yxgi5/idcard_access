@@ -20,7 +20,7 @@ void bsp_Init(void)
 //  bsp_InitUart();
 //  bsp_InitLed();
 //  bsp_InitBeep();
-//  bsp_InitIIC();
+//  bsp_InitI2C();
 }
 
 /**

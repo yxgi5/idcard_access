@@ -19,8 +19,8 @@
   #define GPIO_PORT_BEEP  GPIOA
   #define GPIO_PIN_BEEP GPIO_PIN_8
 
-  #define BEEP_ENABLE() GPIO_PORT_BEEP->BSRRL = GPIO_PIN_BEEP     /* 使能蜂鸣器鸣叫 */
-  #define BEEP_DISABLE()  GPIO_PORT_BEEP->BSRRH = GPIO_PIN_BEEP     /* 禁止蜂鸣器鸣叫 */
+  #define BEEP_ENABLE() GPIO_PORT_BEEP->BSRR = GPIO_PIN_BEEP     /* 使能蜂鸣器鸣叫 */
+  #define BEEP_DISABLE()  GPIO_PORT_BEEP->BSRR = (uint32_t)GPIO_PIN_BEEP << 16U     /* 禁止蜂鸣器鸣叫 */
 #else
   /* 无源蜂鸣器 */
   /* PA15 ---> TIM2_CH1 */

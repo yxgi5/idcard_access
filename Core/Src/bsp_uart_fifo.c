@@ -484,7 +484,7 @@ void bsp_SetUartParam(USART_TypeDef *Instance,  uint32_t BaudRate, uint32_t Pari
 static void InitHardUart(void)
 {
   GPIO_InitTypeDef  GPIO_InitStruct;
-  RCC_PeriphCLKInitTypeDef RCC_PeriphClkInit;
+//  RCC_PeriphCLKInitTypeDef RCC_PeriphClkInit;
 
 #if UART1_FIFO_EN == 1    /* 串口1 */
   /* 使能 GPIO TX/RX 时钟 */

@@ -49,6 +49,7 @@
 #include "bsp_beep.h"
 #include "bsp_i2c.h"
 #include "bsp_i2c_eeprom_24xx.h"
+#include "bsp_spi.h"
 //#include "bsp_modbus.h"
 
 void bsp_Idle(void);

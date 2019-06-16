@@ -364,7 +364,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <useXO>0</useXO>
+            <useXO>1</useXO>
             <v6Lang>0</v6Lang>
             <v6LangP>0</v6LangP>
             <vShortEn>0</vShortEn>
@@ -486,6 +486,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\bsp_i2c.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\bsp_spi.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -580,6 +585,11 @@
               <FileName>stm32l0xx_hal_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l0xx_hal_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_spi.c</FilePath>
             </File>
           </Files>
         </Group>

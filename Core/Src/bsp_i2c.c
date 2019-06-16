@@ -537,8 +537,8 @@ uint8_t i2c2_CheckDevice(uint8_t _Address)
 I2C_HandleTypeDef I2c1Handle;
 I2C_HandleTypeDef I2c2Handle;
 
-#define I2C1_ADDRESS        0x31F
-#define I2C2_ADDRESS        0x32F
+#define I2C1_ADDRESS        0x1E
+#define I2C2_ADDRESS        0x2E
 /* I2C TIMING Register define when I2C clock source is SYSCLK */
 /* I2C TIMING is calculated in case of the I2C Clock source is the SYSCLK = 32 MHz */
 //#define I2C1_TIMING    0x10A13E56 /* 100 kHz with analog Filter ON, Rise Time 400ns, Fall Time 100ns */
@@ -672,7 +672,7 @@ void bsp_InitI2C1(void)
   I2c1Handle.Instance             = I2C1;
   I2c1Handle.Init.Timing          = I2C1_TIMING;
   I2c1Handle.Init.OwnAddress1     = I2C1_ADDRESS;
-  I2c1Handle.Init.AddressingMode  = I2C_ADDRESSINGMODE_10BIT;
+  I2c1Handle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
   I2c1Handle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   I2c1Handle.Init.OwnAddress2     = 0xFF;
   I2c1Handle.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
@@ -693,13 +693,13 @@ void bsp_InitI2C1(void)
     Error_Handler(__FILE__, __LINE__);
   }
 
-  /*
-   * Enable Digital filter
-   */
-  if (HAL_I2CEx_ConfigDigitalFilter(&I2c1Handle, 0) != HAL_OK)
-  {
-    Error_Handler(__FILE__, __LINE__);
-  }
+//  /*
+//   * Enable Digital filter
+//   */
+//  if (HAL_I2CEx_ConfigDigitalFilter(&I2c1Handle, 0) != HAL_OK)
+//  {
+//    Error_Handler(__FILE__, __LINE__);
+//  }
 }
 
 uint8_t i2c1_SendByte(uint8_t *_ucBuffer, uint16_t SlaveAddr)
@@ -838,7 +838,7 @@ void bsp_InitI2C2(void)
   I2c2Handle.Instance             = I2C2;
   I2c2Handle.Init.Timing          = I2C2_TIMING;
   I2c2Handle.Init.OwnAddress1     = I2C2_ADDRESS;
-  I2c2Handle.Init.AddressingMode  = I2C_ADDRESSINGMODE_10BIT;
+  I2c2Handle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
   I2c2Handle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   I2c2Handle.Init.OwnAddress2     = 0xFF;
   I2c2Handle.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
@@ -859,13 +859,13 @@ void bsp_InitI2C2(void)
     Error_Handler(__FILE__, __LINE__);
   }
 
-  /*
-   * Enable Digital filter
-   */
-  if (HAL_I2CEx_ConfigDigitalFilter(&I2c2Handle, 0) != HAL_OK)
-  {
-    Error_Handler(__FILE__, __LINE__);
-  }
+//  /*
+//   * Enable Digital filter
+//   */
+//  if (HAL_I2CEx_ConfigDigitalFilter(&I2c2Handle, 0) != HAL_OK)
+//  {
+//    Error_Handler(__FILE__, __LINE__);
+//  }
 }
 
 uint8_t i2c2_SendByte(uint8_t *_ucBuffer, uint16_t SlaveAddr)

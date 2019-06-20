@@ -268,10 +268,10 @@ uint8_t ee_CheckOk(void)
   return i2c2_CheckDevice(EE_DEV_ADDR);
 }
 
-uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t ByteCount)
+uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t start_addr, uint16_t ByteCount)
 {
   uint8_t Status;
-  uint16_t Address = EE_START_ADDRESS;
+  uint16_t Address = start_addr;
   uint16_t WrBfrOffset;
 
   /*
@@ -285,7 +285,18 @@ uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t ByteCount)
     WriteBuffer[1] = (uint8_t) (Address);
     WrBfrOffset = 2;
   }
-  Status = ee_WriteBytes(WriteBuffer, EE_START_ADDRESS, WrBfrOffset);
+
+  EepromSlvAddr = EE_DEV_ADDR | ((Address >> 8)&3);
+
+
+  Status = i2c2_SendBytes(WriteBuffer, WrBfrOffset, EepromSlvAddr);
+
+  /*
+  	 * Receive the Data.
+  	 */
+
+  Status = i2c2_ReadBytes(WriteBuffer, ByteCount, EepromSlvAddr);
+
 
   return Status;
 }
@@ -329,7 +340,7 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
     {
       if(EE_ADDR_BYTES==1)
       {
-        EepromSlvAddr = EE_DEV_ADDR & (((start_addr & 0x3ff) >> 7) & 0xFE);
+        EepromSlvAddr = EE_DEV_ADDR | ((start_addr >> 8)&3);
         WriteBuffer[0] = (uint8_t)(start_addr & 0xff);
         if(byte_cnt<=EE_PAGE_SIZE) // 起始地址 到 这一页尾 能放得下数据buffer
         {
@@ -363,7 +374,7 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
     {
       if(EE_ADDR_BYTES==1)
       {
-        EepromSlvAddr = EE_DEV_ADDR & (((((page_cnt-start_page)*EE_PAGE_SIZE) & 0x3ff) >> 7)& 0xFE);
+        EepromSlvAddr = EE_DEV_ADDR | ((((page_cnt-start_page)*EE_PAGE_SIZE) >> 8)&3);
         WriteBuffer[0] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
 
         memcpy(WriteBuffer+1, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, end_offset);
@@ -383,7 +394,7 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
     {
       if(EE_ADDR_BYTES==1)
       {
-        EepromSlvAddr = EE_DEV_ADDR & (((((page_cnt-start_page)*EE_PAGE_SIZE) & 0x3ff) >> 7)& 0xFE);
+        EepromSlvAddr = EE_DEV_ADDR | ((((page_cnt-start_page)*EE_PAGE_SIZE) >> 8)&3);
         WriteBuffer[0] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
         memcpy(WriteBuffer+1, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, EE_PAGE_SIZE);
         Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE+WrBfrOffset, EepromSlvAddr);

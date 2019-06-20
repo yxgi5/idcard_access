@@ -5,6 +5,8 @@
  *      Author: andy
  */
 
+//I2C2_TIMING 速率为10K-100K，不可过低或者过高
+
 #ifndef BSP_I2C_BQ40Z50_H_
 #define BSP_I2C_BQ40Z50_H_
 

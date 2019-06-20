@@ -15,12 +15,13 @@ void bsp_Init(void)
 {
   HAL_Init();
   SystemClock_Config();
-//  bsp_InitKey();      /* initial before systick */
-//  bsp_InitTimer();
-//  bsp_InitUart();
-//  bsp_InitLed();
+  bsp_InitKey();      /* initial before systick */
+  bsp_InitTimer();
+  bsp_InitUart();
+  bsp_InitLed();
 //  bsp_InitBeep();
-//  bsp_InitI2C();
+  bsp_InitI2C1();
+  bsp_InitI2C2();
 }
 
 #ifdef USE_HSE

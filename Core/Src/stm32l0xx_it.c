@@ -158,6 +158,11 @@ void I2C2_IRQHandler(void)
 {
   HAL_I2C_EV_IRQHandler(&I2c2Handle);
   HAL_I2C_ER_IRQHandler(&I2c2Handle);
+//  if (I2c2Handle.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
+//    HAL_I2C_ER_IRQHandler(&I2c2Handle);
+//  } else {
+//    HAL_I2C_EV_IRQHandler(&I2c2Handle);
+//  }
 }
 #endif
 

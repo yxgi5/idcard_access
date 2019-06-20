@@ -541,8 +541,8 @@ I2C_HandleTypeDef I2c2Handle;
 #define I2C2_ADDRESS        0x2E
 /* I2C TIMING Register define when I2C clock source is SYSCLK */
 /* I2C TIMING is calculated in case of the I2C Clock source is the SYSCLK = 32 MHz */
-//#define I2C1_TIMING    0x10A13E56 /* 100 kHz with analog Filter ON, Rise Time 400ns, Fall Time 100ns */
-#define I2C1_TIMING      0x00B1112E /* 400 kHz with analog Filter ON, Rise Time 250ns, Fall Time 100ns */
+#define I2C1_TIMING    0x10A13E56 /* 100 kHz with analog Filter ON, Rise Time 400ns, Fall Time 100ns */
+//#define I2C1_TIMING      0x00B1112E /* 400 kHz with analog Filter ON, Rise Time 250ns, Fall Time 100ns */
 #define I2C2_TIMING    0x10A13E56 /* 100 kHz with analog Filter ON, Rise Time 400ns, Fall Time 100ns */
 //#define I2C2_TIMING      0x00B1112E /* 400 kHz with analog Filter ON, Rise Time 250ns, Fall Time 100ns */
 
@@ -702,134 +702,6 @@ void bsp_InitI2C1(void)
 //  }
 }
 
-uint8_t i2c1_SendByte(uint8_t *_ucBuffer, uint16_t SlaveAddr)
-{
-  do
-  {
-    if(HAL_I2C_Master_Transmit_IT(&I2c1Handle, SlaveAddr, _ucBuffer, 1) != HAL_OK)
-    {
-      /* Error_Handler() function is called when error occurs. */
-      Error_Handler(__FILE__, __LINE__);
-      return 1;
-    }
-
-    /*##-5- Wait for the end of the transfer #################################*/
-    /*  Before starting a new communication transfer, you need to check the current
-        state of the peripheral; if it�s busy you need to wait for the end of current
-        transfer before starting a new one.
-        For simplicity reasons, this example is just waiting till the end of the
-        transfer, but application may perform other tasks while transfer operation
-        is ongoing. */
-    while (HAL_I2C_GetState(&I2c1Handle) != HAL_I2C_STATE_READY)
-    {
-    }
-
-    /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-       Master restarts communication */
-  }
-  while(HAL_I2C_GetError(&I2c1Handle) == HAL_I2C_ERROR_AF);
-
-  return 0;
-}
-
-uint8_t i2c1_ReadByte(uint8_t *_ucBuffer, uint16_t SlaveAddr)
-{
-  do
-  {
-    if(HAL_I2C_Master_Receive_IT(&I2c1Handle, SlaveAddr, _ucBuffer, 1) != HAL_OK)
-    {
-      /* Error_Handler() function is called when error occurs. */
-      Error_Handler(__FILE__, __LINE__);
-      return 1;
-    }
-
-    /*##-5- Wait for the end of the transfer #################################*/
-    /*  Before starting a new communication transfer, you need to check the current
-        state of the peripheral; if it�s busy you need to wait for the end of current
-        transfer before starting a new one.
-        For simplicity reasons, this example is just waiting till the end of the
-        transfer, but application may perform other tasks while transfer operation
-        is ongoing. */
-    while (HAL_I2C_GetState(&I2c1Handle) != HAL_I2C_STATE_READY)
-    {
-    }
-
-    /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-       Master restarts communication */
-  }
-  while(HAL_I2C_GetError(&I2c1Handle) == HAL_I2C_ERROR_AF);
-
-  return 0;
-}
-
-uint8_t i2c1_SendBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr)
-{
-  do
-  {
-    if(HAL_I2C_Master_Transmit_IT(&I2c1Handle, SlaveAddr, _ucBuffer, ByteCount) != HAL_OK)
-    {
-      /* Error_Handler() function is called when error occurs. */
-      Error_Handler(__FILE__, __LINE__);
-      return 1;
-    }
-
-    /*##-5- Wait for the end of the transfer #################################*/
-    /*  Before starting a new communication transfer, you need to check the current
-        state of the peripheral; if it�s busy you need to wait for the end of current
-        transfer before starting a new one.
-        For simplicity reasons, this example is just waiting till the end of the
-        transfer, but application may perform other tasks while transfer operation
-        is ongoing. */
-    while (HAL_I2C_GetState(&I2c1Handle) != HAL_I2C_STATE_READY)
-    {
-    }
-
-    /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-       Master restarts communication */
-  }
-  while(HAL_I2C_GetError(&I2c1Handle) == HAL_I2C_ERROR_AF);
-
-  return 0;
-}
-
-uint8_t i2c1_ReadBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr)
-{
-  do
-  {
-    if(HAL_I2C_Master_Receive_IT(&I2c1Handle, SlaveAddr, _ucBuffer, ByteCount) != HAL_OK)
-    {
-      /* Error_Handler() function is called when error occurs. */
-        Error_Handler(__FILE__, __LINE__);
-        return 1;
-    }
-
-    /*##-5- Wait for the end of the transfer #################################*/
-    /*  Before starting a new communication transfer, you need to check the current
-        state of the peripheral; if it�s busy you need to wait for the end of current
-        transfer before starting a new one.
-        For simplicity reasons, this example is just waiting till the end of the
-        transfer, but application may perform other tasks while transfer operation
-        is ongoing. */
-    while (HAL_I2C_GetState(&I2c1Handle) != HAL_I2C_STATE_READY)
-    {
-    }
-
-    /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-       Master restarts communication */
-  }
-  while(HAL_I2C_GetError(&I2c1Handle) == HAL_I2C_ERROR_AF);
-
-  return 0;
-}
-
-uint8_t i2c1_CheckDevice(uint8_t _Address)
-{
-  uint8_t tmp,ret;
-  ret=i2c1_ReadByte(&tmp,_Address);
-
-  return ret; // 1 为异常
-}
-
 #endif // I2C1_EN
 
 #if I2C2_EN == 1
@@ -867,12 +739,13 @@ void bsp_InitI2C2(void)
 //    Error_Handler(__FILE__, __LINE__);
 //  }
 }
+#endif // I2C2_EN
 
-uint8_t i2c2_SendByte(uint8_t *_ucBuffer, uint16_t SlaveAddr)
+uint8_t i2c_SendByte(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t SlaveAddr)
 {
   do
   {
-    if(HAL_I2C_Master_Transmit_IT(&I2c2Handle, SlaveAddr, _ucBuffer, 1) != HAL_OK)
+    if(HAL_I2C_Master_Transmit_IT(hi2c, SlaveAddr, _ucBuffer, 1) != HAL_OK)
     {
       /* Error_Handler() function is called when error occurs. */
       Error_Handler(__FILE__, __LINE__);
@@ -886,23 +759,23 @@ uint8_t i2c2_SendByte(uint8_t *_ucBuffer, uint16_t SlaveAddr)
         For simplicity reasons, this example is just waiting till the end of the
         transfer, but application may perform other tasks while transfer operation
         is ongoing. */
-    while (HAL_I2C_GetState(&I2c2Handle) != HAL_I2C_STATE_READY)
+    while (HAL_I2C_GetState(hi2c) != HAL_I2C_STATE_READY)
     {
     }
 
     /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
        Master restarts communication */
   }
-  while(HAL_I2C_GetError(&I2c2Handle) == HAL_I2C_ERROR_AF);
+  while(HAL_I2C_GetError(hi2c) == HAL_I2C_ERROR_AF);
 
   return 0;
 }
 
-uint8_t i2c2_ReadByte(uint8_t *_ucBuffer, uint16_t SlaveAddr)
+uint8_t i2c_ReadByte(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t SlaveAddr)
 {
   do
   {
-    if(HAL_I2C_Master_Receive_IT(&I2c2Handle, SlaveAddr, _ucBuffer, 1) != HAL_OK)
+    if(HAL_I2C_Master_Receive_IT(hi2c, SlaveAddr, _ucBuffer, 1) != HAL_OK)
     {
       /* Error_Handler() function is called when error occurs. */
       Error_Handler(__FILE__, __LINE__);
@@ -916,23 +789,23 @@ uint8_t i2c2_ReadByte(uint8_t *_ucBuffer, uint16_t SlaveAddr)
         For simplicity reasons, this example is just waiting till the end of the
         transfer, but application may perform other tasks while transfer operation
         is ongoing. */
-    while (HAL_I2C_GetState(&I2c2Handle) != HAL_I2C_STATE_READY)
+    while (HAL_I2C_GetState(hi2c) != HAL_I2C_STATE_READY)
     {
     }
 
     /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
        Master restarts communication */
   }
-  while(HAL_I2C_GetError(&I2c2Handle) == HAL_I2C_ERROR_AF);
+  while(HAL_I2C_GetError(hi2c) == HAL_I2C_ERROR_AF);
 
   return 0;
 }
 
-uint8_t i2c2_SendBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr)
+uint8_t i2c_SendBytes(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr)
 {
   do
   {
-    if(HAL_I2C_Master_Transmit_IT(&I2c2Handle, SlaveAddr, _ucBuffer, ByteCount) != HAL_OK)
+    if(HAL_I2C_Master_Transmit_IT(hi2c, SlaveAddr, _ucBuffer, ByteCount) != HAL_OK)
     {
       /* Error_Handler() function is called when error occurs. */
       Error_Handler(__FILE__, __LINE__);
@@ -946,27 +819,27 @@ uint8_t i2c2_SendBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAdd
         For simplicity reasons, this example is just waiting till the end of the
         transfer, but application may perform other tasks while transfer operation
         is ongoing. */
-    while (HAL_I2C_GetState(&I2c2Handle) != HAL_I2C_STATE_READY)
+    while (HAL_I2C_GetState(hi2c) != HAL_I2C_STATE_READY)
     {
     }
 
     /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
        Master restarts communication */
   }
-  while(HAL_I2C_GetError(&I2c2Handle) == HAL_I2C_ERROR_AF);
+  while(HAL_I2C_GetError(hi2c) == HAL_I2C_ERROR_AF);
 
   return 0;
 }
 
-uint8_t i2c2_ReadBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr)
+uint8_t i2c_ReadBytes(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr)
 {
   do
   {
-    if(HAL_I2C_Master_Receive_IT(&I2c2Handle, SlaveAddr, _ucBuffer, ByteCount) != HAL_OK)
+    if(HAL_I2C_Master_Receive_IT(hi2c, SlaveAddr, _ucBuffer, ByteCount) != HAL_OK)
     {
       /* Error_Handler() function is called when error occurs. */
-      Error_Handler(__FILE__, __LINE__);
-      return 1;
+        Error_Handler(__FILE__, __LINE__);
+        return 1;
     }
 
     /*##-5- Wait for the end of the transfer #################################*/
@@ -976,26 +849,24 @@ uint8_t i2c2_ReadBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAdd
         For simplicity reasons, this example is just waiting till the end of the
         transfer, but application may perform other tasks while transfer operation
         is ongoing. */
-    while (HAL_I2C_GetState(&I2c2Handle) != HAL_I2C_STATE_READY)
+    while (HAL_I2C_GetState(hi2c) != HAL_I2C_STATE_READY)
     {
     }
 
     /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
        Master restarts communication */
   }
-  while(HAL_I2C_GetError(&I2c2Handle) == HAL_I2C_ERROR_AF);
+  while(HAL_I2C_GetError(hi2c) == HAL_I2C_ERROR_AF);
 
   return 0;
 }
 
-uint8_t i2c2_CheckDevice(uint8_t _Address)
+uint8_t i2c_CheckDevice(I2C_HandleTypeDef *hi2c, uint8_t _Address)
 {
   uint8_t tmp,ret;
-  ret=i2c1_ReadByte(&tmp,_Address);
+  ret=i2c_ReadByte(hi2c, &tmp,_Address);
 
   return ret; // 1 为异常
 }
-
-#endif // I2C2_EN
 
 #endif // USE_GPIO_I2C

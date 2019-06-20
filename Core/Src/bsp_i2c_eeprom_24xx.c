@@ -263,12 +263,12 @@ uint16_t EepromSlvAddr=EE_DEV_ADDR;
 
 uint8_t WriteBuffer[32];
 
-uint8_t ee_CheckOk(void)
+uint8_t ee_CheckOk(I2C_HandleTypeDef *hi2c)
 {
-  return i2c2_CheckDevice(EE_DEV_ADDR);
+  return i2c_CheckDevice(hi2c, EE_DEV_ADDR);
 }
 
-uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t start_addr, uint16_t ByteCount)
+uint8_t ee_ReadBytes(I2C_HandleTypeDef *hi2c, uint8_t *_pReadBuf, uint16_t start_addr, uint16_t ByteCount)
 {
   uint8_t Status;
   uint16_t Address = start_addr;
@@ -289,19 +289,19 @@ uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t start_addr, uint16_t ByteCount
   EepromSlvAddr = EE_DEV_ADDR | ((Address >> 8)&3);
 
 
-  Status = i2c2_SendBytes(WriteBuffer, WrBfrOffset, EepromSlvAddr);
+  Status = i2c_SendBytes(hi2c, WriteBuffer, WrBfrOffset, EepromSlvAddr);
 
   /*
   	 * Receive the Data.
   	 */
 
-  Status = i2c2_ReadBytes(WriteBuffer, ByteCount, EepromSlvAddr);
+  Status = i2c_ReadBytes(hi2c, WriteBuffer, ByteCount, EepromSlvAddr);
 
 
   return Status;
 }
 
-uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
+uint8_t ee_WriteBytes(I2C_HandleTypeDef *hi2c, uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
 {
   uint8_t Status=0;
   uint8_t inpage_offset,end_offset,start_page,end_page,page_cnt;
@@ -345,12 +345,12 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
         if(byte_cnt<=EE_PAGE_SIZE) // 起始地址 到 这一页尾 能放得下数据buffer
         {
           memcpy(WriteBuffer+1, Buffer, ByteCount);
-          Status = i2c2_SendBytes(WriteBuffer, ByteCount+WrBfrOffset, EepromSlvAddr);
+          Status = i2c_SendBytes(hi2c, WriteBuffer, ByteCount+WrBfrOffset, EepromSlvAddr);
         }
         else
         {
           memcpy(WriteBuffer+1, Buffer, EE_PAGE_SIZE-inpage_offset);
-          Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE-inpage_offset+WrBfrOffset, EepromSlvAddr);
+          Status = i2c_SendBytes(hi2c, WriteBuffer, EE_PAGE_SIZE-inpage_offset+WrBfrOffset, EepromSlvAddr);
         }
       }
       else
@@ -361,12 +361,12 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
         if(byte_cnt<=EE_PAGE_SIZE) // 起始地址 到 这一页尾 能放得下数据buffer
         {
           memcpy(WriteBuffer+2, Buffer, ByteCount);
-          Status = i2c2_SendBytes(WriteBuffer, ByteCount+WrBfrOffset, EepromSlvAddr);
+          Status = i2c_SendBytes(hi2c, WriteBuffer, ByteCount+WrBfrOffset, EepromSlvAddr);
         }
         else
         {
           memcpy(WriteBuffer+2, Buffer, EE_PAGE_SIZE-inpage_offset);
-          Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE-inpage_offset+WrBfrOffset, EepromSlvAddr);
+          Status = i2c_SendBytes(hi2c, WriteBuffer, EE_PAGE_SIZE-inpage_offset+WrBfrOffset, EepromSlvAddr);
         }
       }
     }
@@ -378,7 +378,7 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
         WriteBuffer[0] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
 
         memcpy(WriteBuffer+1, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, end_offset);
-        Status = i2c2_SendBytes(WriteBuffer, end_offset+WrBfrOffset, EepromSlvAddr);
+        Status = i2c_SendBytes(hi2c, WriteBuffer, end_offset+WrBfrOffset, EepromSlvAddr);
       }
       else
       {
@@ -387,7 +387,7 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
         WriteBuffer[1] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
 
         memcpy(WriteBuffer+2, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, end_offset);
-        Status = i2c2_SendBytes(WriteBuffer, end_offset+WrBfrOffset, EepromSlvAddr);
+        Status = i2c_SendBytes(hi2c, WriteBuffer, end_offset+WrBfrOffset, EepromSlvAddr);
       }
     }
     else
@@ -397,7 +397,7 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
         EepromSlvAddr = EE_DEV_ADDR | ((((page_cnt-start_page)*EE_PAGE_SIZE) >> 8)&3);
         WriteBuffer[0] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
         memcpy(WriteBuffer+1, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, EE_PAGE_SIZE);
-        Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE+WrBfrOffset, EepromSlvAddr);
+        Status = i2c_SendBytes(hi2c, WriteBuffer, EE_PAGE_SIZE+WrBfrOffset, EepromSlvAddr);
       }
       else
       {
@@ -405,7 +405,7 @@ uint8_t ee_WriteBytes(uint8_t * Buffer, uint16_t start_addr, uint16_t ByteCount)
         WriteBuffer[0] = (uint8_t)((((page_cnt-start_page)*EE_PAGE_SIZE)>>8) & 0xff); // 24c256 15 bits, 24c128 14 bits
         WriteBuffer[1] = (uint8_t)(((page_cnt-start_page)*EE_PAGE_SIZE) & 0xff);
         memcpy(WriteBuffer+2, Buffer+(EE_PAGE_SIZE-inpage_offset)+(page_cnt-start_page-1)*EE_PAGE_SIZE, EE_PAGE_SIZE);
-        Status = i2c2_SendBytes(WriteBuffer, EE_PAGE_SIZE+WrBfrOffset, EepromSlvAddr);
+        Status = i2c_SendBytes(hi2c, WriteBuffer, EE_PAGE_SIZE+WrBfrOffset, EepromSlvAddr);
       }
     }
     if (Status != 0)

@@ -84,21 +84,16 @@ extern I2C_HandleTypeDef I2c2Handle;
 
 #if I2C1_EN == 1
 void bsp_InitI2C1(void);
-uint8_t i2c1_SendByte(uint8_t *_ucBuffer, uint16_t SlaveAddr);
-uint8_t i2c1_ReadByte(uint8_t *_ucBuffer, uint16_t SlaveAddr);
-uint8_t i2c1_SendBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr);
-uint8_t i2c1_ReadBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr);
-uint8_t i2c1_CheckDevice(uint8_t _Address);
 #endif
 
 #if I2C2_EN == 1
 void bsp_InitI2C2(void);
-uint8_t i2c2_SendByte(uint8_t *_ucBuffer, uint16_t SlaveAddr);
-uint8_t i2c2_ReadByte(uint8_t *_ucBuffer, uint16_t SlaveAddr);
-uint8_t i2c2_SendBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr);
-uint8_t i2c2_ReadBytes(uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr);
-uint8_t i2c2_CheckDevice(uint8_t _Address);
 #endif
+uint8_t i2c_SendByte(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t SlaveAddr);
+uint8_t i2c_ReadByte(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t SlaveAddr);
+uint8_t i2c_SendBytes(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr);
+uint8_t i2c_ReadBytes(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr);
+uint8_t i2c_CheckDevice(I2C_HandleTypeDef *hi2c, uint8_t _Address);
 
 #endif
 

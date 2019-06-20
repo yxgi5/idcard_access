@@ -46,10 +46,9 @@
   #define EE_ADDR_BYTES   2     /* 地址字节个数 */
 #endif
 
-uint8_t ee_CheckOk(void);
-uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t start_addr, uint16_t ByteCount);
-//uint8_t ee_ReadBytes(uint8_t *_pReadBuf, uint16_t ByteCount);
-uint8_t ee_WriteBytes(uint8_t *_pWriteBuf, uint16_t start_addr, uint16_t ByteCount);
+uint8_t ee_CheckOk(I2C_HandleTypeDef *hi2c);
+uint8_t ee_ReadBytes(I2C_HandleTypeDef *hi2c, uint8_t *_pReadBuf, uint16_t start_addr, uint16_t ByteCount);
+uint8_t ee_WriteBytes(I2C_HandleTypeDef *hi2c, uint8_t *_pWriteBuf, uint16_t start_addr, uint16_t ByteCount);
 
 #endif /* BSP_I2C_EEPROM_24XX_H_ */
 

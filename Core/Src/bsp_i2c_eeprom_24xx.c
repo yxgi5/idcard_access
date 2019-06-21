@@ -312,8 +312,8 @@ uint8_t ee_WriteBytes(I2C_HandleTypeDef *hi2c, uint8_t * Buffer, uint16_t start_
   /*
    * Send the Data.
    */
-  inpage_offset = start_addr%EE_PAGE_SIZE; // 起始地址在一页内的偏移 0~15
-  byte_cnt = ByteCount+inpage_offset;
+  inpage_offset = start_addr%EE_PAGE_SIZE; // 起始地址在一页内的偏移
+  byte_cnt = ByteCount+start_addr;
   end_addr = byte_cnt-1;// 结束字节位置就是byte_cnt-1
   end_offset = byte_cnt % EE_PAGE_SIZE;
 

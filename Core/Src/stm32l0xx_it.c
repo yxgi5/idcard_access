@@ -139,35 +139,7 @@ __weak void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32l0xx.s).                    */
 /******************************************************************************/
 
-/* USER CODE BEGIN 1 */
-#if USE_GPIO_I2C == 1
-#else
-/**
-  * @brief  This function handles I2C event and error interrupt request.
-  * @param  None
-  * @retval None
-  * @Note   This function is redefined in "main.h" and related to I2C data transmission
-  */
-void I2C1_IRQHandler(void)
-{
-  if (I2c1Handle.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
-    HAL_I2C_ER_IRQHandler(&I2c1Handle);
-  } else {
-    HAL_I2C_EV_IRQHandler(&I2c1Handle);
-  }
-}
 
-void I2C2_IRQHandler(void)
-{
-//  HAL_I2C_EV_IRQHandler(&I2c2Handle);
-//  HAL_I2C_ER_IRQHandler(&I2c2Handle);
-  if (I2c2Handle.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
-    HAL_I2C_ER_IRQHandler(&I2c2Handle);
-  } else {
-    HAL_I2C_EV_IRQHandler(&I2c2Handle);
-  }
-}
-#endif
 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

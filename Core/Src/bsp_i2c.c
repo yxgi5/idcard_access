@@ -870,4 +870,34 @@ uint8_t i2c_CheckDevice(I2C_HandleTypeDef *hi2c, uint8_t _Address)
   return ret; // 1 为异常
 }
 
+#if I2C1_EN == 1
+/**
+  * @brief  This function handles I2C event and error interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to I2C data transmission
+  */
+void I2C1_IRQHandler(void)
+{
+  if (I2c1Handle.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
+    HAL_I2C_ER_IRQHandler(&I2c1Handle);
+  } else {
+    HAL_I2C_EV_IRQHandler(&I2c1Handle);
+  }
+}
+#endif
+
+#if I2C2_EN == 1
+void I2C2_IRQHandler(void)
+{
+//  HAL_I2C_EV_IRQHandler(&I2c2Handle);
+//  HAL_I2C_ER_IRQHandler(&I2c2Handle);
+  if (I2c2Handle.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
+    HAL_I2C_ER_IRQHandler(&I2c2Handle);
+  } else {
+    HAL_I2C_EV_IRQHandler(&I2c2Handle);
+  }
+}
+#endif
+
 #endif // USE_GPIO_I2C

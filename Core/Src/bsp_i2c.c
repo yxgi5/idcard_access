@@ -837,7 +837,7 @@ uint8_t i2c_ReadBytes(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t Mem
 
 	do
 	{
-	  if(HAL_I2C_Mem_Read_IT(hi2c, DevAddress, 0, MemAddSize, pData, Size)!= HAL_OK)
+	  if(HAL_I2C_Mem_Read_IT(hi2c, DevAddress, MemAddress, MemAddSize, pData, Size)!= HAL_OK)
 	  {
 		/* Error_Handler() function is called when error occurs. */
 		Error_Handler(__FILE__, __LINE__);

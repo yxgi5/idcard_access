@@ -806,6 +806,7 @@ uint8_t i2c_SendBytes(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t Byte
   do
   {
     if(HAL_I2C_Master_Transmit_IT(hi2c, SlaveAddr, _ucBuffer, ByteCount) != HAL_OK)
+//	if(HAL_I2C_Mem_Write_IT(hi2c, DevAddress, MemAddress, MemAddSize, pData, Size)!= HAL_OK)
     {
       /* Error_Handler() function is called when error occurs. */
       Error_Handler(__FILE__, __LINE__);
@@ -831,34 +832,34 @@ uint8_t i2c_SendBytes(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t Byte
   return 0;
 }
 
-uint8_t i2c_ReadBytes(I2C_HandleTypeDef *hi2c, uint8_t *_ucBuffer, uint16_t ByteCount, uint16_t SlaveAddr)
+uint8_t i2c_ReadBytes(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t MemAddress, uint16_t MemAddSize, uint8_t *pData, uint16_t Size)
 {
-  do
-  {
-    if(HAL_I2C_Master_Receive_IT(hi2c, SlaveAddr, _ucBuffer, ByteCount) != HAL_OK)
-    {
-      /* Error_Handler() function is called when error occurs. */
-        Error_Handler(__FILE__, __LINE__);
-        return 1;
-    }
 
-    /*##-5- Wait for the end of the transfer #################################*/
-    /*  Before starting a new communication transfer, you need to check the current
-        state of the peripheral; if it�s busy you need to wait for the end of current
-        transfer before starting a new one.
-        For simplicity reasons, this example is just waiting till the end of the
-        transfer, but application may perform other tasks while transfer operation
-        is ongoing. */
-    while (HAL_I2C_GetState(hi2c) != HAL_I2C_STATE_READY)
-    {
-    }
+	do
+	{
+	  if(HAL_I2C_Mem_Read_IT(hi2c, DevAddress, 0, MemAddSize, pData, Size)!= HAL_OK)
+	  {
+		/* Error_Handler() function is called when error occurs. */
+		Error_Handler(__FILE__, __LINE__);
+		return 1;
+	  }
 
-    /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-       Master restarts communication */
-  }
-  while(HAL_I2C_GetError(hi2c) == HAL_I2C_ERROR_AF);
+	  /*  Before starting a new communication transfer, you need to check the current
+		  state of the peripheral; if it抯 busy you need to wait for the end of current
+		  transfer before starting a new one.
+		  For simplicity reasons, this example is just waiting till the end of the
+		  transfer, but application may perform other tasks while transfer operation
+		  is ongoing. */
+	  while (HAL_I2C_GetState(hi2c) != HAL_I2C_STATE_READY)
+	  {
+	  }
 
-  return 0;
+	  /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
+		 Master restarts communication */
+	}
+	while(HAL_I2C_GetError(hi2c) == HAL_I2C_ERROR_AF);
+
+	return 0;
 }
 
 uint8_t i2c_CheckDevice(I2C_HandleTypeDef *hi2c, uint8_t _Address)

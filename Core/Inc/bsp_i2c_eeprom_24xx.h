@@ -12,7 +12,7 @@
 #define BSP_I2C_EEPROM_24XX_H_
 
 #define EE_START_ADDRESS 0
-#define AT24C08
+#define AT24C02
 
 #ifdef AT24C02
   #define EE_MODEL_NAME   "AT24C02"

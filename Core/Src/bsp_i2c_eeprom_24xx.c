@@ -272,31 +272,25 @@ uint8_t ee_ReadBytes(I2C_HandleTypeDef *hi2c, uint8_t *_pReadBuf, uint16_t start
 {
   uint8_t Status;
   uint16_t Address = start_addr;
+  uint16_t MemAddrSize;
   uint16_t WrBfrOffset;
 
-  /*
-   * Position the Pointer in EEPROM.
-   */
   if (EE_ADDR_BYTES == 1) {
-    WriteBuffer[0] = (uint8_t) (Address);
-    WrBfrOffset = 1;
+//    WriteBuffer[0] = (uint8_t) (Address);
+//    WrBfrOffset = 1;
+	  EepromSlvAddr = EE_DEV_ADDR | (((Address >> 8)&3)<<1);
+	  Address = Address & 0xff;
+	  MemAddrSize = I2C_MEMADD_SIZE_8BIT;
   } else {
-    WriteBuffer[0] = (uint8_t) (Address >> 8);
-    WriteBuffer[1] = (uint8_t) (Address);
-    WrBfrOffset = 2;
+//    WriteBuffer[0] = (uint8_t) (Address >> 8);
+//    WriteBuffer[1] = (uint8_t) (Address);
+//    WrBfrOffset = 2;
+	  EepromSlvAddr = EE_DEV_ADDR;
+//	  Address = start_addr;
+	  MemAddrSize = I2C_MEMADD_SIZE_16BIT;
   }
 
-  EepromSlvAddr = EE_DEV_ADDR | (((Address >> 8)&3)<1);
-
-
-  Status = i2c_SendBytes(hi2c, WriteBuffer, WrBfrOffset, EepromSlvAddr);
-
-  /*
-  	 * Receive the Data.
-  	 */
-
-  Status = i2c_ReadBytes(hi2c, WriteBuffer, ByteCount, EepromSlvAddr);
-
+  Status = i2c_ReadBytes(hi2c, EepromSlvAddr, Address, MemAddrSize, _pReadBuf, ByteCount);
 
   return Status;
 }

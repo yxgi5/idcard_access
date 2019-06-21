@@ -100,32 +100,32 @@ int main(void)
 	ee_WriteBytes(&I2c1Handle, tmp, 0, sizeof(tmp));
 
 	HAL_Delay(100);
-//	ee_ReadBytes(&I2c1Handle, tmp1, 0, sizeof(tmp1));
-//	HAL_Delay(100);
-
-	do
-	{
-	  if(HAL_I2C_Mem_Read_IT(&I2c1Handle, (uint16_t)EE_DEV_ADDR, 0, I2C_MEMADD_SIZE_8BIT, (uint8_t*)tmp1, sizeof(tmp1))!= HAL_OK)
-	  {
-		/* Error_Handler() function is called when error occurs. */
-		Error_Handler(__FILE__, __LINE__);
-	  }
-
-	  /*  Before starting a new communication transfer, you need to check the current
-		  state of the peripheral; if it抯 busy you need to wait for the end of current
-		  transfer before starting a new one.
-		  For simplicity reasons, this example is just waiting till the end of the
-		  transfer, but application may perform other tasks while transfer operation
-		  is ongoing. */
-	  while (HAL_I2C_GetState(&I2c1Handle) != HAL_I2C_STATE_READY)
-	  {
-	  }
-
-	  /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-		 Master restarts communication */
-	}
-	while(HAL_I2C_GetError(&I2c1Handle) == HAL_I2C_ERROR_AF);
+	ee_ReadBytes(&I2c1Handle, tmp1, 0, sizeof(tmp1));
 	HAL_Delay(100);
+
+//	do
+//	{
+//	  if(HAL_I2C_Mem_Read_IT(&I2c1Handle, (uint16_t)EE_DEV_ADDR, 0, I2C_MEMADD_SIZE_8BIT, (uint8_t*)tmp1, sizeof(tmp1))!= HAL_OK)
+//	  {
+//		/* Error_Handler() function is called when error occurs. */
+//		Error_Handler(__FILE__, __LINE__);
+//	  }
+//
+//	  /*  Before starting a new communication transfer, you need to check the current
+//		  state of the peripheral; if it抯 busy you need to wait for the end of current
+//		  transfer before starting a new one.
+//		  For simplicity reasons, this example is just waiting till the end of the
+//		  transfer, but application may perform other tasks while transfer operation
+//		  is ongoing. */
+//	  while (HAL_I2C_GetState(&I2c1Handle) != HAL_I2C_STATE_READY)
+//	  {
+//	  }
+//
+//	  /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
+//		 Master restarts communication */
+//	}
+//	while(HAL_I2C_GetError(&I2c1Handle) == HAL_I2C_ERROR_AF);
+//	HAL_Delay(100);
 
     /* USER CODE BEGIN 3 */
   }

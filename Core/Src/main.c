@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "bsp.h"
+extern unsigned char BMP1[];
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -73,6 +74,7 @@ static void MX_SPI1_Init(void);
 int main(void)
 {
   bsp_Init();
+  uint8_t i=0;
 
   /* Initialize all configured peripherals */
 //  MX_GPIO_Init();
@@ -80,83 +82,31 @@ int main(void)
 //  MX_I2C2_Init();
 //  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-
+  OLED_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  uint8_t ctrl=1;
-    /* USER CODE END WHILE */
-	uint8_t tmp[40]={12,2,3,4,5,6,7,8,9,10,\
-	11,12,13,14,15,16,17,18,19,20,21,22,\
-	23,24,25,26,27,28,29,30,31,32,33,34,\
-	35,36,37,38,39,40};
-//	ee_WriteBytes(&I2c1Handle, tmp,0,40);
-
-
-	uint8_t tmp1[40]={0};
-
-	ee_WriteBytes(&I2c1Handle, tmp, 6, sizeof(tmp));
-//  if(ctrl)
-//  {
-//	do
-//	{
-//	if(HAL_I2C_Master_Transmit_IT(&I2c1Handle, EE_DEV_ADDR, tmp, 40) != HAL_OK)
-//	//	if(HAL_I2C_Mem_Write_IT(hi2c, DevAddress, MemAddress, MemAddSize, pData, Size)!= HAL_OK)
-//	{
-//	  /* Error_Handler() function is called when error occurs. */
-//	  Error_Handler(__FILE__, __LINE__);
-//	  return 1;
-//	}
-//
-//	/*##-5- Wait for the end of the transfer #################################*/
-//	/*  Before starting a new communication transfer, you need to check the current
-//		state of the peripheral; if it�s busy you need to wait for the end of current
-//		transfer before starting a new one.
-//		For simplicity reasons, this example is just waiting till the end of the
-//		transfer, but application may perform other tasks while transfer operation
-//		is ongoing. */
-//	while (HAL_I2C_GetState(&I2c1Handle) != HAL_I2C_STATE_READY)
-//	{
-//	}
-//
-//	/* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-//	   Master restarts communication */
-//	}
-//	while(HAL_I2C_GetError(&I2c1Handle) == HAL_I2C_ERROR_AF);
-//  }
-
-	HAL_Delay(100);
-	ee_ReadBytes(&I2c1Handle, tmp1, 0, sizeof(tmp1));
-	HAL_Delay(100);
-
-//	do
-//	{
-//	  if(HAL_I2C_Mem_Read_IT(&I2c1Handle, (uint16_t)EE_DEV_ADDR, 20, I2C_MEMADD_SIZE_8BIT, (uint8_t*)tmp1, sizeof(tmp1))!= HAL_OK)
-//	  {
-//		/* Error_Handler() function is called when error occurs. */
-//		Error_Handler(__FILE__, __LINE__);
-//	  }
-//
-//	  /*  Before starting a new communication transfer, you need to check the current
-//		  state of the peripheral; if it抯 busy you need to wait for the end of current
-//		  transfer before starting a new one.
-//		  For simplicity reasons, this example is just waiting till the end of the
-//		  transfer, but application may perform other tasks while transfer operation
-//		  is ongoing. */
-//	  while (HAL_I2C_GetState(&I2c1Handle) != HAL_I2C_STATE_READY)
-//	  {
-//	  }
-//
-//	  /* When Acknowledge failure occurs (Slave don't acknowledge it's address)
-//		 Master restarts communication */
-//	}
-//	while(HAL_I2C_GetError(&I2c1Handle) == HAL_I2C_ERROR_AF);
-//	HAL_Delay(100);
-
-    /* USER CODE BEGIN 3 */
+    OLED_Fill(0xFF);//È«ÆÁµãÁÁ
+    HAL_Delay(2000);
+    OLED_Fill(0x00);//È«ÆÁÃð
+    HAL_Delay(2000);
+    for(i=0;i<5;i++)
+    {
+      OLED_ShowCN(22+i*16,0,i);//²âÊÔÏÔÊ¾ÖÐÎÄ
+    }
+    HAL_Delay(2000);
+    OLED_ShowStr(0,3,"HelTec Automation",1);//²âÊÔ6*8×Ö·û
+    OLED_ShowStr(0,4,"Hello Tech",2);       //²âÊÔ8*16×Ö·û
+    HAL_Delay(2000);
+    OLED_CLS();//ÇåÆÁ
+    OLED_OFF();//²âÊÔOLEDÐÝÃß
+    HAL_Delay(2000);
+    OLED_ON();//²âÊÔOLEDÐÝÃßºó»½ÐÑ
+    OLED_DrawBMP(0,0,128,8,(unsigned char *)BMP1);//²âÊÔBMPÎ»Í¼ÏÔÊ¾
+    HAL_Delay(2000);
   }
   /* USER CODE END 3 */
 }

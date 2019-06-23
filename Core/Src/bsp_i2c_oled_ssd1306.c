@@ -11,12 +11,18 @@
 
 void WriteCmd(unsigned char I2C_Command)
 {
-	i2c2_SendByte(&I2C_Command, 0x00);
+  uint8_t arr[2]={0};
+  arr[0]=0x00;
+  arr[1]=I2C_Command;
+  i2c_SendBytes(&I2c1Handle, arr, 2, OLED_ADDRESS);
 }
 
 void WriteDat(unsigned char I2C_Data)
 {
-	I2C_WriteByte(&I2C_Data, 0x40);
+  uint8_t arr[2]={0};
+  arr[0]=0x40;
+  arr[1]=I2C_Data;
+  i2c_SendBytes(&I2c1Handle, arr, 2, OLED_ADDRESS);
 }
 
 void OLED_Init(void)

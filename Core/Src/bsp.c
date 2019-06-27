@@ -19,7 +19,7 @@ void bsp_Init(void)
   bsp_InitTimer();
 //  bsp_InitUart();
 //  bsp_InitLed();
-//  bsp_InitBeep();
+  BEEP_InitHard();
   bsp_InitI2C1();
   bsp_InitI2C2();
 }

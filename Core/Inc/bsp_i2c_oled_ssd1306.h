@@ -10,6 +10,10 @@
 
 #define OLED_ADDRESS	0x78 //通过调整0R电阻,屏可以0x78和0x7A两个地址 -- 默认0x78
 
+#define Brightness  0xCF
+#define X_WIDTH     128
+#define Y_WIDTH     64
+
 //void I2C_Configuration(void);
 //void I2C_WriteByte(uint8_t addr,uint8_t data);
 void WriteCmd(unsigned char I2C_Command);

@@ -48,6 +48,8 @@ I2C_HandleTypeDef hi2c2;
 
 SPI_HandleTypeDef hspi1;
 
+uint8_t Vol_Precent;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -83,30 +85,151 @@ int main(void)
 //  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   OLED_Init();
+  BEEP_Start(200, 200, 1);
+  OLED_ShowCN(10,3,23);
+  OLED_ShowCN(42,3,24);
+  OLED_ShowCN(74,3,25);
+  OLED_ShowCN(106,3,26);
+  HAL_Delay(10000);
+  OLED_CLS();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    OLED_Fill(0xFF);//È«ÆÁµãÁÁ
-    HAL_Delay(2000);
-    OLED_Fill(0x00);//È«ÆÁÃð
-    HAL_Delay(2000);
-    for(i=0;i<5;i++)
+    Vol_Precent = (uint8_t)bq40z50_read_reg(CMD_RSOC);
+
+    if(Vol_Precent>99)    //超99%，显示100%
     {
-      OLED_ShowCN(22+i*16,0,i);//²âÊÔÏÔÊ¾ÖÐÎÄ
+      bsp_LedOff(LED1);
+      OLED_ShowCN(8,2,20);
+      OLED_ShowCN(24,2,21);
+      OLED_ShowCN(40,2,16);
+      OLED_ShowCN(56,2,1);
+      OLED_ShowCN(72,2,0);
+      OLED_ShowCN(88,2,0);
+      OLED_ShowCN(104,2,22);
     }
-    HAL_Delay(2000);
-    OLED_ShowStr(0,3,"HelTec Automation",1);//²âÊÔ6*8×Ö·û
-    OLED_ShowStr(0,4,"Hello Tech",2);       //²âÊÔ8*16×Ö·û
-    HAL_Delay(2000);
-    OLED_CLS();//ÇåÆÁ
-    OLED_OFF();//²âÊÔOLEDÐÝÃß
-    HAL_Delay(2000);
-    OLED_ON();//²âÊÔOLEDÐÝÃßºó»½ÐÑ
-    OLED_DrawBMP(0,0,128,8,(unsigned char *)BMP1);//²âÊÔBMPÎ»Í¼ÏÔÊ¾
-    HAL_Delay(2000);
+    else if(Vol_Precent<42)   //小于42%，提示充电
+    {
+        bsp_LedOn(LED1);
+        OLED_CLS();
+        OLED_ShowCN(26,2,11);
+        OLED_ShowCN(58,2,12);
+        OLED_ShowCN(90,2,20);
+        BEEP_Start(200, 200, 5);
+    }
+    else
+    {
+      bsp_LedOff(LED1);
+      OLED_ShowCN(8,2,20);
+      OLED_ShowCN(24,2,21);
+      OLED_ShowCN(40,2,16);
+      OLED_ShowCN(56,2,10);
+      OLED_ShowCN(72,2,Vol_Precent/10);
+      OLED_ShowCN(88,2,Vol_Precent%10);
+      OLED_ShowCN(104,2,22);
+    }
+
+//    if(ComSearchCard_Function())   //寻卡
+//    {
+//      if(ComAnticollCard_Function()) //防冲突
+//      {
+//        if(ComSelectCard_Function()) //选卡
+//        {
+//          if(ComCheckCard_Function()) //密钥认证
+//          {
+//            if(ComReadBlock5_Function())//读块
+//            {
+//              if((g_cComReceiveBuffer[5]==0xff)&&(g_cComReceiveBuffer[6]==0xff))
+//              {
+//                EepromWrite(Test_Number_L_Addr,0);
+//                EepromWrite(Test_Number_H_Addr,0);
+//              }
+//              Test_Number_L=EePromRead(Test_Number_L_Addr);
+//              Test_Number_H=EePromRead(Test_Number_H_Addr);
+//              Test_Number_H= Test_Number_H + g_cComReceiveBuffer[5];
+//              Test_Number_L= Test_Number_L + g_cComReceiveBuffer[6];
+//              Test_Nmuber=Test_Number_H*256+Test_Number_L;
+//              if(Test_Nmuber<=9999)            //若EEPROM中值加卡上值小于9999，卡清零，卡上值累加写入eeprom中
+//              {
+//                EePromErase(Test_Number_L_Addr);
+//                EePromErase(Test_Number_H_Addr);
+//                EepromWrite(Test_Number_L_Addr,Test_Number_L);
+//                EepromWrite(Test_Number_H_Addr,Test_Number_H);
+//                while(!ComWriteBlock5_Function());
+//              }
+//              else
+//              {
+//                break;
+//              }
+//            }
+//            else
+//            {
+//              break;
+//            }
+//          }
+//          else
+//          {
+//            break;
+//          }
+//        }
+//        else
+//        {
+//            break;
+//        }
+//      }
+//      else
+//      {
+//        break;
+//      }
+//    }
+//    Test_Number_L=EePromRead(Test_Number_L_Addr);
+//    Test_Number_H=EePromRead(Test_Number_H_Addr);
+//    Test_Nmuber= Test_Number_H*256+Test_Number_L;
+//
+//    if(Test_Nmuber==0x0000)        //若EEPROM中值为0，提示充值
+//    {
+//      OLED_CLS();
+//      OLED_P16x16CH(26,5,11);
+//      OLED_P16x16CH(58,5,12);
+//      OLED_P16x16CH(90,5,13);
+//      Beep(3);
+//      EePromErase(Test_Number_L_Addr);
+//      EePromErase(Test_Number_H_Addr);
+//      EepromWrite(Test_Number_L_Addr,0);
+//      EepromWrite(Test_Number_H_Addr,0);
+//      while(!ComSearchCard_Function());
+//      while(!ComAnticollCard_Function());
+//      while(!ComSelectCard_Function());
+//      while(!ComCheckCard_Function());
+//      while(!ComReadBlock5_Function());
+//      EePromErase(Test_Number_L_Addr);
+//      EePromErase(Test_Number_H_Addr);
+//      EepromWrite(Test_Number_L_Addr,g_cComReceiveBuffer[6]);
+//      EepromWrite(Test_Number_H_Addr,g_cComReceiveBuffer[5]);
+//      while(!ComWriteBlock5_Function());
+//    }
+//    OLED_P16x16CH(8,5,14);
+//    OLED_P16x16CH(24,5,15);
+//    OLED_P16x16CH(40,5,16);
+//    OLED_P16x16CH(52,5,Test_Nmuber/1000);
+//    OLED_P16x16CH(68,5,(Test_Nmuber%1000)/100);
+//    OLED_P16x16CH(84,5,((Test_Nmuber%1000)%100)/10);
+//    OLED_P16x16CH(100,5,((Test_Nmuber%1000)%100)%10);
+//    if((Key_Scan()==0x10)&&(Test_Nmuber>0))
+//    {
+//      Motor_Run(36000);
+//      Test_Nmuber=Test_Nmuber-1;
+//      Test_Number_H= Test_Nmuber/256;
+//      Test_Number_L= Test_Nmuber%256;
+//      EePromErase(Test_Number_L_Addr);
+//      EePromErase(Test_Number_H_Addr);
+//      EepromWrite(Test_Number_L_Addr,Test_Number_L);
+//      EepromWrite(Test_Number_H_Addr,Test_Number_H);
+//    }
+
   }
   /* USER CODE END 3 */
 }

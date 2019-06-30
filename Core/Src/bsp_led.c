@@ -12,11 +12,11 @@
 
 static void BSP_LED_Init(Led_TypeDef Led);
 
-GPIO_TypeDef* GPIO_PORT[LEDn] = {GPIO_PORT_LED1,
+static GPIO_TypeDef* GPIO_PORT[LEDn] = {GPIO_PORT_LED1,
                                 GPIO_PORT_LED2,
                                 GPIO_PORT_LED3,
                                 GPIO_PORT_LED4};
-const uint16_t GPIO_PIN[LEDn] = {GPIO_PIN_LED1,
+static const uint16_t GPIO_PIN[LEDn] = {GPIO_PIN_LED1,
                                 GPIO_PIN_LED2,
                                 GPIO_PIN_LED3,
                                 GPIO_PIN_LED4};
@@ -71,9 +71,9 @@ void BSP_LED_Init(Led_TypeDef Led)
   *     @arg LED3
   *     @arg LED4
   */
-void bsp_LedOn(uint8_t _no)
+void bsp_LedOn(Led_TypeDef _no)
 {
-  _no--;
+//  _no--;
 
   if (_no == 0)
   {
@@ -102,9 +102,9 @@ void bsp_LedOn(uint8_t _no)
   *     @arg LED3
   *     @arg LED4
   */
-void bsp_LedOff(uint8_t _no)
+void bsp_LedOff(Led_TypeDef _no)
 {
-  _no--;
+//  _no--;
 
   if (_no == 0)
   {
@@ -133,21 +133,21 @@ void bsp_LedOff(uint8_t _no)
   *     @arg LED3
   *     @arg LED4
   */
-void bsp_LedToggle(uint8_t _no)
+void bsp_LedToggle(Led_TypeDef _no)
 {
-  if (_no == 1)
+  if (_no == 0)
   {
     GPIO_PORT_LED1->ODR ^= GPIO_PIN_LED1;
   }
-  else if (_no == 2)
+  else if (_no == 1)
   {
     GPIO_PORT_LED2->ODR ^= GPIO_PIN_LED2;
   }
-  else if (_no == 3)
+  else if (_no == 2)
   {
     GPIO_PORT_LED3->ODR ^= GPIO_PIN_LED3;
   }
-  else if (_no == 4)
+  else if (_no == 3)
   {
     GPIO_PORT_LED4->ODR ^= GPIO_PIN_LED4;
   }
@@ -162,9 +162,9 @@ void bsp_LedToggle(uint8_t _no)
   *     @arg LED3
   *     @arg LED4
   */
-uint8_t bsp_IsLedOn(uint8_t _no)
+uint8_t bsp_IsLedOn(Led_TypeDef _no)
 {
-  if (_no == 1)
+  if (_no == 0)
   {
     if ((GPIO_PORT_LED1->ODR & GPIO_PIN_LED1) == 0)
     {
@@ -172,7 +172,7 @@ uint8_t bsp_IsLedOn(uint8_t _no)
     }
     return 0;
   }
-  else if (_no == 2)
+  else if (_no == 1)
   {
     if ((GPIO_PORT_LED2->ODR & GPIO_PIN_LED2) == 0)
     {
@@ -180,7 +180,7 @@ uint8_t bsp_IsLedOn(uint8_t _no)
     }
     return 0;
   }
-  else if (_no == 3)
+  else if (_no == 2)
   {
     if ((GPIO_PORT_LED3->ODR & GPIO_PIN_LED3) == 0)
     {
@@ -188,7 +188,7 @@ uint8_t bsp_IsLedOn(uint8_t _no)
     }
     return 0;
   }
-  else if (_no == 4)
+  else if (_no == 3)
   {
     if ((GPIO_PORT_LED4->ODR & GPIO_PIN_LED4) == 0)
     {

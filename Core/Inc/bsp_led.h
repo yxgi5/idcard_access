@@ -78,9 +78,9 @@ typedef enum
                                           }while(0)
 
 void bsp_InitLed(void);
-void bsp_LedOn(uint8_t _no);
-void bsp_LedOff(uint8_t _no);
-void bsp_LedToggle(uint8_t _no);
-uint8_t bsp_IsLedOn(uint8_t _no);
+void bsp_LedOn(Led_TypeDef _no);
+void bsp_LedOff(Led_TypeDef _no);
+void bsp_LedToggle(Led_TypeDef _no);
+uint8_t bsp_IsLedOn(Led_TypeDef _no);
 
 #endif /* INC_BSP_LED_H_ */

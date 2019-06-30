@@ -501,6 +501,21 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\bsp_i2c_oled_ssd1306.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\bsp_motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_i2c_bq40z50.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\bsp_i2c_bq40z50.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_M104BPC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\bsp_M104BPC.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -17,7 +17,7 @@ void bsp_Init(void)
   SystemClock_Config();
   bsp_InitKey();      /* initial before systick */
   bsp_InitTimer();
-//  bsp_InitUart();
+  bsp_InitUart();
 //  bsp_InitLed();
   BEEP_InitHard();
   bsp_InitI2C1();

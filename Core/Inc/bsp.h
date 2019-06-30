@@ -53,6 +53,8 @@
 #include "bsp_i2c_bq40z50.h"
 #include "bsp_spi.h"
 #include "bsp_rtc.h"
+#include "bsp_M104BPC.h"
+#include "bsp_motor.h"
 
 void bsp_Idle(void);
 void bsp_Init(void);

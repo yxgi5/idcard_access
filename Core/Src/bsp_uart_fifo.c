@@ -404,7 +404,7 @@ static void UartVarInit(void)
   g_tUart1.usTxCount = 0;           /* 待发送的数据个数 */
   g_tUart1.SendBefor = 0;           /* 发送数据前的回调函数 */
   g_tUart1.SendOver = 0;            /* 发送完毕后的回调函数 */
-  g_tUart1.ReciveNew = 0;           /* 接收到新数据后的回调函数 */
+  g_tUart1.ReciveNew = bsp_m104bpc_uart_callback;           /* 接收到新数据后的回调函数 */
   g_tUart1.Sending = 0;           /* 正在发送中标志 */
 #endif
 

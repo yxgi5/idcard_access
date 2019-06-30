@@ -21,6 +21,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "bsp.h"
 extern unsigned char BMP1[];
+#define  Test_Number_L_Addr 0x0000
+#define  Test_Number_H_Addr 0x0010
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -49,6 +51,8 @@ I2C_HandleTypeDef hi2c2;
 SPI_HandleTypeDef hspi1;
 
 uint8_t Vol_Precent;
+uint8_t Test_Number_L,Test_Number_H;
+uint32_t Test_Nmuber;
 
 /* USER CODE BEGIN PV */
 
@@ -132,103 +136,97 @@ int main(void)
       OLED_ShowCN(104,2,22);
     }
 
-//    if(ComSearchCard_Function())   //寻卡
-//    {
-//      if(ComAnticollCard_Function()) //防冲突
-//      {
-//        if(ComSelectCard_Function()) //选卡
-//        {
-//          if(ComCheckCard_Function()) //密钥认证
-//          {
-//            if(ComReadBlock5_Function())//读块
-//            {
-//              if((g_cComReceiveBuffer[5]==0xff)&&(g_cComReceiveBuffer[6]==0xff))
-//              {
-//                EepromWrite(Test_Number_L_Addr,0);
-//                EepromWrite(Test_Number_H_Addr,0);
-//              }
-//              Test_Number_L=EePromRead(Test_Number_L_Addr);
-//              Test_Number_H=EePromRead(Test_Number_H_Addr);
-//              Test_Number_H= Test_Number_H + g_cComReceiveBuffer[5];
-//              Test_Number_L= Test_Number_L + g_cComReceiveBuffer[6];
-//              Test_Nmuber=Test_Number_H*256+Test_Number_L;
-//              if(Test_Nmuber<=9999)            //若EEPROM中值加卡上值小于9999，卡清零，卡上值累加写入eeprom中
-//              {
-//                EePromErase(Test_Number_L_Addr);
-//                EePromErase(Test_Number_H_Addr);
-//                EepromWrite(Test_Number_L_Addr,Test_Number_L);
-//                EepromWrite(Test_Number_H_Addr,Test_Number_H);
-//                while(!ComWriteBlock5_Function());
-//              }
-//              else
-//              {
-//                break;
-//              }
-//            }
-//            else
-//            {
-//              break;
-//            }
-//          }
-//          else
-//          {
-//            break;
-//          }
-//        }
-//        else
-//        {
-//            break;
-//        }
-//      }
-//      else
-//      {
-//        break;
-//      }
-//    }
-//    Test_Number_L=EePromRead(Test_Number_L_Addr);
-//    Test_Number_H=EePromRead(Test_Number_H_Addr);
-//    Test_Nmuber= Test_Number_H*256+Test_Number_L;
-//
-//    if(Test_Nmuber==0x0000)        //若EEPROM中值为0，提示充值
-//    {
-//      OLED_CLS();
-//      OLED_P16x16CH(26,5,11);
-//      OLED_P16x16CH(58,5,12);
-//      OLED_P16x16CH(90,5,13);
-//      Beep(3);
-//      EePromErase(Test_Number_L_Addr);
-//      EePromErase(Test_Number_H_Addr);
-//      EepromWrite(Test_Number_L_Addr,0);
-//      EepromWrite(Test_Number_H_Addr,0);
-//      while(!ComSearchCard_Function());
-//      while(!ComAnticollCard_Function());
-//      while(!ComSelectCard_Function());
-//      while(!ComCheckCard_Function());
-//      while(!ComReadBlock5_Function());
-//      EePromErase(Test_Number_L_Addr);
-//      EePromErase(Test_Number_H_Addr);
-//      EepromWrite(Test_Number_L_Addr,g_cComReceiveBuffer[6]);
-//      EepromWrite(Test_Number_H_Addr,g_cComReceiveBuffer[5]);
-//      while(!ComWriteBlock5_Function());
-//    }
-//    OLED_P16x16CH(8,5,14);
-//    OLED_P16x16CH(24,5,15);
-//    OLED_P16x16CH(40,5,16);
-//    OLED_P16x16CH(52,5,Test_Nmuber/1000);
-//    OLED_P16x16CH(68,5,(Test_Nmuber%1000)/100);
-//    OLED_P16x16CH(84,5,((Test_Nmuber%1000)%100)/10);
-//    OLED_P16x16CH(100,5,((Test_Nmuber%1000)%100)%10);
-//    if((Key_Scan()==0x10)&&(Test_Nmuber>0))
-//    {
-//      Motor_Run(36000);
-//      Test_Nmuber=Test_Nmuber-1;
-//      Test_Number_H= Test_Nmuber/256;
-//      Test_Number_L= Test_Nmuber%256;
-//      EePromErase(Test_Number_L_Addr);
-//      EePromErase(Test_Number_H_Addr);
-//      EepromWrite(Test_Number_L_Addr,Test_Number_L);
-//      EepromWrite(Test_Number_H_Addr,Test_Number_H);
-//    }
+    if(ComSearchCard_Function())   //寻卡
+    {
+      if(ComAnticollCard_Function()) //防冲突
+      {
+        if(ComSelectCard_Function()) //选卡
+        {
+          if(ComCheckCard_Function()) //密钥认证
+          {
+            if(ComReadBlock5_Function())//读块
+            {
+              if((g_cComReceiveBuffer[5]==0xff)&&(g_cComReceiveBuffer[6]==0xff))
+              {
+                uint8_t tmp=0;
+                ee_WriteBytes(&I2c1Handle, &tmp, Test_Number_L_Addr, 1);
+                ee_WriteBytes(&I2c1Handle, &tmp, Test_Number_H_Addr, 1);
+              }
+              Test_Number_H= Test_Number_H + g_cComReceiveBuffer[5];
+              Test_Number_L= Test_Number_L + g_cComReceiveBuffer[6];
+              Test_Nmuber=Test_Number_H*256+Test_Number_L;
+              if(Test_Nmuber<=9999)            //若EEPROM中值加卡上值小于9999，卡清零，卡上值累加写入eeprom中
+              {
+                ee_WriteBytes(&I2c1Handle, &Test_Number_L, Test_Number_L_Addr, 1);
+                ee_WriteBytes(&I2c1Handle, &Test_Number_H, Test_Number_H_Addr, 1);
+                while(!ComWriteBlock5_Function());
+              }
+              else
+              {
+                break;
+              }
+            }
+            else
+            {
+              break;
+            }
+          }
+          else
+          {
+            break;
+          }
+        }
+        else
+        {
+            break;
+        }
+      }
+      else
+      {
+        break;
+      }
+    }
+    ee_ReadBytes(&I2c1Handle, &Test_Number_L, Test_Number_L_Addr, 1);
+    ee_ReadBytes(&I2c1Handle, &Test_Number_H, Test_Number_H_Addr, 1);
+    Test_Nmuber= Test_Number_H*256+Test_Number_L;
+
+    if(Test_Nmuber==0x0000)        //若EEPROM中值为0，提示充值
+    {
+      OLED_CLS();
+      OLED_ShowCN(26,5,11);
+      OLED_ShowCN(58,5,12);
+      OLED_ShowCN(90,5,13);
+      BEEP_Start(200, 200, 3);
+      {
+        uint8_t tmp=0;
+        ee_WriteBytes(&I2c1Handle, &tmp, Test_Number_L_Addr, 1);
+        ee_WriteBytes(&I2c1Handle, &tmp, Test_Number_H_Addr, 1);
+      }
+      while(!ComSearchCard_Function());
+      while(!ComAnticollCard_Function());
+      while(!ComSelectCard_Function());
+      while(!ComCheckCard_Function());
+      while(!ComReadBlock5_Function());
+      ee_ReadBytes(&I2c1Handle, &g_cComReceiveBuffer[6], Test_Number_L_Addr, 1);
+      ee_ReadBytes(&I2c1Handle, &g_cComReceiveBuffer[5], Test_Number_H_Addr, 1);
+      while(!ComWriteBlock5_Function());
+    }
+    OLED_ShowCN(8,5,14);
+    OLED_ShowCN(24,5,15);
+    OLED_ShowCN(40,5,16);
+    OLED_ShowCN(52,5,Test_Nmuber/1000);
+    OLED_ShowCN(68,5,(Test_Nmuber%1000)/100);
+    OLED_ShowCN(84,5,((Test_Nmuber%1000)%100)/10);
+    OLED_ShowCN(100,5,((Test_Nmuber%1000)%100)%10);
+    if((bsp_GetKey()==0x10)&&(Test_Nmuber>0))
+    {
+      bsp_Motor_Run(36000);
+      Test_Nmuber=Test_Nmuber-1;
+      Test_Number_H= Test_Nmuber/256;
+      Test_Number_L= Test_Nmuber%256;
+      ee_ReadBytes(&I2c1Handle, &Test_Number_L, Test_Number_L_Addr, 1);
+      ee_ReadBytes(&I2c1Handle, &Test_Number_H, Test_Number_H_Addr, 1);
+    }
 
   }
   /* USER CODE END 3 */
